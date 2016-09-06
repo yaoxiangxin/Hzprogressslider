@@ -14,7 +14,16 @@ class ProgressSlider: UIControl {
     let trackLayer = ProgressSliderTrackLayer()
     let thumbLayer = ProgressSliderThumbLayer()
     
-    override var frame: CGRect { didSet { updateLayerFrames() } }
+    override var frame: CGRect {
+        didSet {
+            updateLayerFrames()
+        }
+    }
+    override var highlighted: Bool {
+        didSet {
+            transform = highlighted ? CGAffineTransformMakeScale(1.0, 10.0) : CGAffineTransformIdentity
+        }
+    }
     
     var trackHeight: CGFloat = 5.0
     var minimumTrackTintColor = UIColor(red: 0.0, green: 175.0 / 255.0, blue: 29.0 / 255.0, alpha: 1.0)
@@ -23,8 +32,6 @@ class ProgressSlider: UIControl {
     
     var thumbSize = CGSizeMake(2.0, 5.0)
     var thumbTintColor = UIColor.whiteColor()
-    
-    var transformWhileTrackingTouches = CGAffineTransformMakeScale(1.0, 10.0)
     
     var minimumValue = 0.0 {
         didSet {
@@ -100,15 +107,12 @@ class ProgressSlider: UIControl {
         
         if thumbLayer.frame.contains(previousLocation) {
             thumbLayer.highlighted = true
-            transform = transformWhileTrackingTouches
         }
         
         return thumbLayer.highlighted
     }
     
     override func continueTrackingWithTouch(touch: UITouch, withEvent event: UIEvent?) -> Bool {
-        transform = transformWhileTrackingTouches
-        
         let location = touch.locationInView(self)
         let deltaX = Double(location.x - previousLocation.x)
         let deltaValue = (maximumValue - minimumValue) * deltaX / Double(bounds.width - thumbSize.width)
@@ -124,7 +128,6 @@ class ProgressSlider: UIControl {
     
     override func endTrackingWithTouch(touch: UITouch?, withEvent event: UIEvent?) {
         thumbLayer.highlighted = false
-        transform = CGAffineTransformIdentity
     }
 
 }
